@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Valentine 💖</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .card {
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+        z-index: 2; /* Stay above confetti */
+    }
+
+    h1 {
+        color: #e63946;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        font-size: 1.1rem;
+        color: #444;
+        margin-bottom: 20px;
+        min-height: 120px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+    .question {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin: 20px 0;
+        color: #d62828;
+    }
+
+    .buttons {
+        position: relative;
+        height: 80px;
+    }
+
+    button {
+        padding: 12px 25px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #yesBtn {
+        background: #ff4d6d;
+        color: white;
+    }
+
+    #yesBtn:hover {
+        background: #e63946;
+        transform: scale(1.05);
+    }
+
+    #noBtn {
+        background: #adb5bd;
+        color: black;
+        position: absolute;
+        left: 55%;
+    }
+
+    /* Smooth fade-in love message */
+    .love-msg {
+        display: none;
+        opacity: 0;
+        font-size: 1.3rem;
+        color: #e63946;
+        font-weight: bold;
+        line-height: 1.5;
+        transition: opacity 1s ease, transform 0.8s ease;
+        transform: translateY(20px);
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+    .love-msg.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Floating hearts */
+    .heart {
+        position: absolute;
+        font-size: 20px;
+        color: #e63946;
+        animation: float 4s linear infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        50% { transform: translateY(-100px) scale(1.2); opacity: 0.8; }
+        100% { transform: translateY(-200px) scale(0.8); opacity: 0; }
+    }
+
+    /* Confetti canvas */
+    #confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; /* Don’t block clicks */
+        z-index: 1; /* Behind card */
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Hey My Love 💕</h1>
+    <div class="message" id="message"></div>
+
+    <div class="question">Will you be my Valentine? 💖</div>
+
+    <div class="buttons">
+        <button id="yesBtn">Yes 💘</button>
+        <button id="noBtn">No 🙈</button>
+    </div>
+
+    <div class="love-msg" id="loveMsg">
+        Yayyy!! 😍💖<br>
+        You just made me the happiest person in the world!<br>
+        Happy Valentine’s Day, my love ❤️🌹
+    </div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const loveMsg = document.getElementById("loveMsg");
+    const messageDiv = document.getElementById("message");
+
+    // Proposal message typing effect
+    const proposalText = `
+    since the moment i saw you, my world changed in the most beautiful way.  
+    Your smile feels like home to me, your voice feels like peace, and your presence 
+    makes everything in my life better.  
+    I don’t want perfect moments, I want real moments — with you.  
+    Through every smile, every struggle, every dream and every future plan,  
+    I want you beside me.  
+    Not just for today, not just for Valentine’s Day…  
+    but for every tomorrow of my life. ❤️  
+`;
+
+    let index = 0;
+    function typeMessage() {
+        if (index < proposalText.length) {
+            messageDiv.innerHTML += proposalText.charAt(index);
+            index++;
+            setTimeout(typeMessage, 50);
+        }
+    }
+    typeMessage();
+
+    // Move "No" button away when hovered or clicked
+    noBtn.addEventListener("mouseover", moveButton);
+    noBtn.addEventListener("click", moveButton);
+
+    function moveButton() {
+        const x = Math.random() * 250 - 125;
+        const y = Math.random() * 100 - 50;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    // Yes button action
+    yesBtn.addEventListener("click", () => {
+        yesBtn.style.display = "none";
+        noBtn.style.display = "none";
+
+        // Smooth fade-in love message
+        loveMsg.classList.add("show");
+
+        startConfetti();
+    });
+
+    // Floating hearts
+    function createHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.fontSize = (15 + Math.random() * 25) + "px";
+        heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 4000);
+    }
+    setInterval(createHeart, 300);
+
+    // Confetti effect
+    function startConfetti() {
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const confetti = [];
+        for (let i = 0; i < 150; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * 20 + 10,
+                color: `hsl(${Math.random() * 360}, 70%, 60%)`,
+                tilt: Math.random() * 10 - 10,
+                tiltAngleIncrement: Math.random() * 0.07 + 0.05
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confetti.forEach((c, i) => {
+                ctx.beginPath();
+                ctx.lineWidth = c.r;
+                ctx.strokeStyle = c.color;
+                ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+                ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+                ctx.stroke();
+
+                c.tilt += c.tiltAngleIncrement;
+                c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+
+                if (c.y > canvas.height) {
+                    confetti[i] = {
+                        x: Math.random() * canvas.width,
+                        y: -10,
+                        r: c.r,
+                        d: c.d,
+                        color: c.color,
+                        tilt: Math.random() * 10 - 10,
+                        tiltAngleIncrement: c.tiltAngleIncrement
+                    };
+                }
+            });
+            requestAnimationFrame(draw);
+        }
+        draw();
+    }
+</script>
+
+</body>
+</html>
